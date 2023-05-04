@@ -497,7 +497,7 @@ class HealthFactory {
       final String devManufacturer = e["device_manufacturer"] ?? 'woopsie manu';
       final String devModel = e["device_model"] ?? 'woopsie model';
       final String devName = e["device_name"] ?? 'woopsie name';
-      final Map<String, dynamic> metadata = jsonDecode(e["meta"] ?? '{}');
+      final Map<String, dynamic> metadata = jsonDecode(e["meta"] ?? '{}') ?? {};
       // final Map<String, dynamic> metadata = e["meta"] ?? {};
       return HealthDataPoint(
         value,
