@@ -201,7 +201,7 @@ class HealthFactory {
           '',
           '',
           '',
-          '', {});
+          '');
 
       bmiHealthPoints.add(x);
     }
@@ -494,11 +494,9 @@ class HealthFactory {
       final DateTime to = DateTime.fromMillisecondsSinceEpoch(e['date_to']);
       final String sourceId = e["source_id"];
       final String sourceName = e["source_name"];
-      final String devManufacturer = e["device_manufacturer"] ?? 'woopsie manu';
-      final String devModel = e["device_model"] ?? 'woopsie model';
-      final String devName = e["device_name"] ?? 'woopsie name';
-      final Map<String, dynamic> metadata = jsonDecode(e["meta"] ?? '{}') ?? {};
-      // final Map<String, dynamic> metadata = e["meta"] ?? {};
+      final String devManufacturer = e["dev_manufacturer"] ?? 'woopsie manu';
+      final String devModel = e["dev_model"] ?? 'woopsie model';
+      final String devName = e["dev_name"] ?? 'woopsie name';
       return HealthDataPoint(
         value,
         dataType,
@@ -512,7 +510,6 @@ class HealthFactory {
         devManufacturer,
         devModel,
         devName,
-        metadata,
       );
     }).toList();
 

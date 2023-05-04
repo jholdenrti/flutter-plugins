@@ -486,7 +486,8 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_name": sample.sourceRevision.source.name,
                         "dev_manufacturer": sample.device?.manufacturer,
                         "dev_model": sample.device?.model,
-                        "dev_name": sample.device?.name,
+                        "dev_name": sample.sourceRevision.source.
+                        
                         "meta": meta
 
                     ]
@@ -594,6 +595,15 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         leftEarSensitivities.append(samplePoint.leftEarSensitivity!.doubleValue(for: HKUnit.decibelHearingLevel()))
                         rightEarSensitivities.append(samplePoint.rightEarSensitivity!.doubleValue(for: HKUnit.decibelHearingLevel()))
                     }
+                    var meta: String = ""
+
+                    do {
+                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                        meta = String(data: encoded, encoding: .utf8)!
+                    }
+                    catch {
+
+                    }
                     return [
                         "uuid": "\(sample.uuid)",
                         "frequencies": frequencies,
@@ -606,7 +616,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer,
                         "dev_model": sample.device?.model,
                         "dev_name": sample.device?.name,
-                        "meta": sample.metadata
+                        "meta":meta
 
                     ]
                 }
