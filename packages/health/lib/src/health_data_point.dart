@@ -15,6 +15,7 @@ class HealthDataPoint {
   String _devManufacturer;
   String _devModel;
   String _devName;
+  String _devUUID;
 
   HealthDataPoint(
     this._value,
@@ -29,6 +30,7 @@ class HealthDataPoint {
     this._devManufacturer,
     this._devModel,
     this._devName,
+    this._devUUID,
   ) {
     // set the value to minutes rather than the category
     // returned by the native API
@@ -77,6 +79,7 @@ class HealthDataPoint {
       json['dev_manufacturer'] ?? '',
       json['dev_model'] ?? '',
       json['dev_name'] ?? '',
+      json['dev_uuid'] ?? '',
     );
   }
 
@@ -94,6 +97,7 @@ class HealthDataPoint {
         'dev_manufacturer': devManufacturer,
         'dev_model': devModel,
         'dev_name': devName,
+        'dev_uuid': devUUID,
       };
 
   @override
@@ -109,7 +113,8 @@ class HealthDataPoint {
     sourceName: $sourceName,
     devManufacturer: $devManufacturer,
     devModel: $devModel,
-    devName: $devName
+    devName: $devName,
+    devUUID: $devUUID,
     """;
 
   // / The quantity value of the data point
@@ -153,6 +158,9 @@ class HealthDataPoint {
 
   /// The name of the device from which the data point was fetched.
   String get devName => _devName;
+
+  /// The UUID of the device from which the data point was fetched.
+  String get devUUID => _devUUID;
 
   @override
   bool operator ==(Object o) {
