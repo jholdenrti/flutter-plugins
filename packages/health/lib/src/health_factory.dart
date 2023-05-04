@@ -494,9 +494,9 @@ class HealthFactory {
       final DateTime to = DateTime.fromMillisecondsSinceEpoch(e['date_to']);
       final String sourceId = e["source_id"];
       final String sourceName = e["source_name"];
-      final String devManufacturer = e["device_manufacturer"];
-      final String devModel = e["device_model"];
-      final String devName = e["device_name"];
+      final String devManufacturer = e["device_manufacturer"] ?? 'woopsie manu';
+      final String devModel = e["device_model"] ?? 'woopsie model';
+      final String devName = e["device_name"] ?? 'woopsie name';
       return HealthDataPoint(
         value,
         dataType,
