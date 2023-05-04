@@ -466,6 +466,17 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             switch samplesOrNil {
             case let (samples as [HKQuantitySample]) as Any:
                 let dictionaries = samples.map { sample -> NSDictionary in
+                    var meta: String = ""
+                    
+                    do {
+                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                        meta = String(data: encoded, encoding: .utf8)!
+                    }
+                    catch {
+                        
+                    }
+                   
+                    
                     return [
                         "uuid": "\(sample.uuid)",
                         "value": sample.quantity.doubleValue(for: unit!),
@@ -476,7 +487,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer,
                         "dev_model": sample.device?.model,
                         "dev_name": sample.device?.name,
-                        "meta": sample.metadata
+                        "meta": meta
 
                     ]
                 }
