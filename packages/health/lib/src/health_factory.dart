@@ -190,20 +190,18 @@ class HealthFactory {
           (weights[i].value as NumericHealthValue).numericValue.toDouble() /
               (h * h);
       final x = HealthDataPoint(
-        NumericHealthValue(bmiValue),
-        dataType,
-        unit,
-        weights[i].dateFrom,
-        weights[i].dateTo,
-        _platformType,
-        _deviceId!,
-        '',
-        '',
-        '',
-        '',
-        '',
-        '',
-      );
+          NumericHealthValue(bmiValue),
+          dataType,
+          unit,
+          weights[i].dateFrom,
+          weights[i].dateTo,
+          _platformType,
+          _deviceId!,
+          '',
+          '',
+          '',
+          '',
+          '');
 
       bmiHealthPoints.add(x);
     }
@@ -499,7 +497,6 @@ class HealthFactory {
       final String devManufacturer = e["dev_manufacturer"];
       final String devModel = e["dev_model"];
       final String devName = e["dev_name"];
-      final String devUUID = e["dev_uuid"];
       return HealthDataPoint(
         value,
         dataType,
@@ -513,7 +510,6 @@ class HealthFactory {
         devManufacturer,
         devModel,
         devName,
-        devUUID,
       );
     }).toList();
 
