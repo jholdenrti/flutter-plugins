@@ -475,7 +475,8 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_name": sample.sourceRevision.source.name,
                         "dev_manufacturer": sample.device?.manufacturer,
                         "dev_model": sample.device?.model,
-                        "dev_name": sample.device?.name
+                        "dev_name": sample.device?.name,
+                        "meta": sample.metadata
 
                     ]
                 }
@@ -518,7 +519,8 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_name": sample.sourceRevision.source.name,
                         "dev_manufacturer": sample.device?.manufacturer,
                         "dev_model": sample.device?.model,
-                        "dev_name": sample.device?.name
+                        "dev_name": sample.device?.name,
+                        "meta": sample.metadata
 
                     ]
                 }
@@ -542,7 +544,8 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_name": sample.sourceRevision.source.name,
                         "dev_manufacturer": sample.device?.manufacturer,
                         "dev_model": sample.device?.model,
-                        "dev_name": sample.device?.name
+                        "dev_name": sample.device?.name,
+                        "meta": sample.metadata
 
                     ]
                 }
@@ -572,7 +575,8 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "source_name": sample.sourceRevision.source.name,
                         "dev_manufacturer": sample.device?.manufacturer,
                         "dev_model": sample.device?.model,
-                        "dev_name": sample.device?.name
+                        "dev_name": sample.device?.name,
+                        "meta": sample.metadata
 
                     ]
                 }
@@ -630,7 +634,8 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             "source_name": sample.sourceRevision.source.name,
             "dev_manufacturer": sample.device?.manufacturer,
             "dev_model": sample.device?.model,
-            "dev_name": sample.device?.name
+            "dev_name": sample.device?.name,
+            "meta": sample.metadata
 
         ]
     }

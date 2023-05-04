@@ -15,6 +15,7 @@ class HealthDataPoint {
   String _devManufacturer;
   String _devModel;
   String _devName;
+  Map<String, dynamic> _metadata;
 
   HealthDataPoint(
       this._value,
@@ -28,7 +29,8 @@ class HealthDataPoint {
       this._sourceName,
       this._devManufacturer,
       this._devModel,
-      this._devName) {
+      this._devName,
+      this._metadata) {
     // set the value to minutes rather than the category
     // returned by the native API
     if (type == HealthDataType.MINDFULNESS ||
@@ -76,7 +78,8 @@ class HealthDataPoint {
         json['source_name'],
         json['dev_manufacturer'] ?? 'woopsie manu',
         json['dev_model'] ?? 'woopsie model',
-        json['dev_name'] ?? 'woopsie name');
+        json['dev_name'] ?? 'woopsie name',
+        json['metadata'] ?? {});
   }
 
   /// Converts the [HealthDataPoint] to a json object
@@ -92,7 +95,8 @@ class HealthDataPoint {
         'source_name': sourceName,
         'dev_manufacturer': devManufacturer,
         'dev_model': devModel,
-        'dev_name': devName
+        'dev_name': devName,
+        'metadata': metadata
       };
 
   @override
@@ -152,6 +156,8 @@ class HealthDataPoint {
 
   /// The name of the device from which the data point was fetched.
   String get devName => _devName;
+
+  Map<String, dynamic> get metadata => _metadata;
 
   @override
   bool operator ==(Object o) {
