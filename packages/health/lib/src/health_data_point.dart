@@ -12,6 +12,9 @@ class HealthDataPoint {
   String _deviceId;
   String _sourceId;
   String _sourceName;
+  String _devManufacturer;
+  String _devModel;
+  String _devName;
 
   HealthDataPoint(
       this._value,
@@ -22,7 +25,10 @@ class HealthDataPoint {
       this._platform,
       this._deviceId,
       this._sourceId,
-      this._sourceName) {
+      this._sourceName,
+      this._devManufacturer,
+      this._devModel,
+      this._devName) {
     // set the value to minutes rather than the category
     // returned by the native API
     if (type == HealthDataType.MINDFULNESS ||
@@ -67,7 +73,10 @@ class HealthDataPoint {
             .indexOf(json['platform_type'])],
         json['device_id'],
         json['source_id'],
-        json['source_name']);
+        json['source_name'],
+        json['dev_manufacturer'],
+        json['dev_model'],
+        json['dev_name']);
   }
 
   /// Converts the [HealthDataPoint] to a json object
@@ -80,11 +89,14 @@ class HealthDataPoint {
         'platform_type': PlatformTypeJsonValue[platform],
         'device_id': deviceId,
         'source_id': sourceId,
-        'source_name': sourceName
+        'source_name': sourceName,
+        'dev_manufacturer': devManufacturer,
+        'dev_model': devModel,
+        'dev_name': devName
       };
 
   @override
-  String toString() => """${this.runtimeType} - 
+  String toString() => """${this.runtimeType} -
     value: ${value.toString()},
     unit: ${unit.name},
     dateFrom: $dateFrom,
@@ -93,7 +105,11 @@ class HealthDataPoint {
     platform: $platform,
     deviceId: $deviceId,
     sourceId: $sourceId,
-    sourceName: $sourceName""";
+    sourceName: $sourceName,
+    devManufacturer: $devManufacturer,
+    devModel: $devModel,
+    devName: $devName
+    """;
 
   // / The quantity value of the data point
   HealthValue get value => _value;
@@ -127,6 +143,15 @@ class HealthDataPoint {
 
   /// The name of the source from which the data point was fetched.
   String get sourceName => _sourceName;
+
+  /// The manufacturer of the device from which the data point was fetched.
+  String get devManufacturer => _devManufacturer;
+
+  /// The model of the device from which the data point was fetched.
+  String get devModel => _devModel;
+
+  /// The name of the device from which the data point was fetched.
+  String get devName => _devName;
 
   @override
   bool operator ==(Object o) {
