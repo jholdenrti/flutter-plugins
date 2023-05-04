@@ -74,9 +74,9 @@ class HealthDataPoint {
       json['device_id'],
       json['source_id'],
       json['source_name'],
-      json['dev_manufacturer'] ?? 'woopsie manu',
-      json['dev_model'] ?? 'woopsie model',
-      json['dev_name'] ?? 'woopsie name',
+      json['dev_manufacturer'] ?? '',
+      json['dev_model'] ?? '',
+      json['dev_name'] ?? '',
     );
   }
 
