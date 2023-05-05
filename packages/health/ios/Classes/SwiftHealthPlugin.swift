@@ -476,7 +476,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "dev_uuid": sample.device?.localIdentifier ?? "",
+                        "meta":sammple.metadata
                     ]
                 }
                 DispatchQueue.main.async {
@@ -519,7 +519,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "dev_uuid": sample.device?.localIdentifier ?? "",
+                        "meta":sammple.metadata
 
                     ]
                 }
@@ -544,7 +544,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "dev_uuid": sample.device?.localIdentifier ?? "",
+                        "meta":sammple.metadata
 
                     ]
                 }
@@ -576,7 +576,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "dev_uuid": sample.device?.localIdentifier ?? "",
+                        "meta":sammple.metadata
 
                     ]
                 }
@@ -636,7 +636,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             "dev_manufacturer": sample.device?.manufacturer ?? "",
             "dev_model": sample.device?.model ?? "",
             "dev_name": sample.device?.name ?? "",
-            "dev_uuid": sample.device?.localIdentifier ?? "",
+            "meta":sammple.metadata
 
 
         ]

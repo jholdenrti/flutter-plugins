@@ -15,21 +15,22 @@ class HealthDataPoint {
   String _devManufacturer;
   String _devModel;
   String _devName;
+  Map<String, dynamic>? _metadata;
 
   HealthDataPoint(
-    this._value,
-    this._type,
-    this._unit,
-    this._dateFrom,
-    this._dateTo,
-    this._platform,
-    this._deviceId,
-    this._sourceId,
-    this._sourceName,
-    this._devManufacturer,
-    this._devModel,
-    this._devName,
-  ) {
+      this._value,
+      this._type,
+      this._unit,
+      this._dateFrom,
+      this._dateTo,
+      this._platform,
+      this._deviceId,
+      this._sourceId,
+      this._sourceName,
+      this._devManufacturer,
+      this._devModel,
+      this._devName,
+      this._metadata) {
     // set the value to minutes rather than the category
     // returned by the native API
     if (type == HealthDataType.MINDFULNESS ||
@@ -62,22 +63,23 @@ class HealthDataPoint {
     }
 
     return HealthDataPoint(
-      healthValue,
-      HealthDataType.values
-          .firstWhere((element) => element.name == json['data_type']),
-      HealthDataUnit.values
-          .firstWhere((element) => element.name == json['unit']),
-      DateTime.parse(json['date_from']),
-      DateTime.parse(json['date_to']),
-      PlatformTypeJsonValue.keys.toList()[
-          PlatformTypeJsonValue.values.toList().indexOf(json['platform_type'])],
-      json['device_id'],
-      json['source_id'],
-      json['source_name'],
-      json['dev_manufacturer'] ?? '',
-      json['dev_model'] ?? '',
-      json['dev_name'] ?? '',
-    );
+        healthValue,
+        HealthDataType.values
+            .firstWhere((element) => element.name == json['data_type']),
+        HealthDataUnit.values
+            .firstWhere((element) => element.name == json['unit']),
+        DateTime.parse(json['date_from']),
+        DateTime.parse(json['date_to']),
+        PlatformTypeJsonValue.keys.toList()[PlatformTypeJsonValue.values
+            .toList()
+            .indexOf(json['platform_type'])],
+        json['device_id'],
+        json['source_id'],
+        json['source_name'],
+        json['dev_manufacturer'] ?? '',
+        json['dev_model'] ?? '',
+        json['dev_name'] ?? '',
+        null);
   }
 
   /// Converts the [HealthDataPoint] to a json object
@@ -94,6 +96,7 @@ class HealthDataPoint {
         'dev_manufacturer': devManufacturer,
         'dev_model': devModel,
         'dev_name': devName,
+        'metadata': _metadata
       };
 
   @override
@@ -153,6 +156,9 @@ class HealthDataPoint {
 
   /// The name of the device from which the data point was fetched.
   String get devName => _devName;
+
+  /// The metadata of the data point
+  Map<String, dynamic>? get metadata => _metadata;
 
   @override
   bool operator ==(Object o) {
