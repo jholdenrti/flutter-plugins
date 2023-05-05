@@ -15,7 +15,7 @@ class HealthDataPoint {
   String _devManufacturer;
   String _devModel;
   String _devName;
-  Map<String, dynamic>? _metadata;
+  Map<dynamic, dynamic>? _metadata;
 
   HealthDataPoint(
       this._value,
@@ -158,7 +158,7 @@ class HealthDataPoint {
   String get devName => _devName;
 
   /// The metadata of the data point
-  Map<String, dynamic>? get metadata => _metadata;
+  Map<dynamic, dynamic>? get metadata => _metadata;
 
   @override
   bool operator ==(Object o) {
