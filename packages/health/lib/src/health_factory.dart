@@ -201,8 +201,7 @@ class HealthFactory {
           '',
           '',
           '',
-          '',
-          null);
+          '', {});
 
       bmiHealthPoints.add(x);
     }
@@ -498,7 +497,7 @@ class HealthFactory {
       final String devManufacturer = e["dev_manufacturer"];
       final String devModel = e["dev_model"];
       final String devName = e["dev_name"];
-      final Map<dynamic, dynamic>? metadata = e["meta"];
+      final Map<String, dynamic> metadata = jsonDecode(e["meta"] ?? "{}") ?? {};
       return HealthDataPoint(
         value,
         dataType,

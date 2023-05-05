@@ -466,6 +466,17 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             switch samplesOrNil {
             case let (samples as [HKQuantitySample]) as Any:
                 let dictionaries = samples.map { sample -> NSDictionary in
+
+                    var meta: String = ""
+
+                    do {
+                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                        meta = String(data: encoded, encoding: .utf8)!
+                    }
+                    catch {
+
+                    }
+
                     return [
                         "uuid": "\(sample.uuid)",
                         "value": sample.quantity.doubleValue(for: unit!),
@@ -476,7 +487,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "meta":sample.metadata
+                        "meta":meta
                     ]
                 }
                 DispatchQueue.main.async {
@@ -509,6 +520,15 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                     samplesCategory = samplesCategory.filter { $0.value == 4 }
                 }
                 let categories = samplesCategory.map { sample -> NSDictionary in
+                    var meta: String = ""
+
+                    do {
+                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                        meta = String(data: encoded, encoding: .utf8)!
+                    }
+                    catch {
+
+                    }
                     return [
                         "uuid": "\(sample.uuid)",
                         "value": sample.value,
@@ -519,7 +539,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "meta":sample.metadata
+                        "meta":meta
 
                     ]
                 }
@@ -530,6 +550,16 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             case let (samplesWorkout as [HKWorkout]) as Any:
 
                 let dictionaries = samplesWorkout.map { sample -> NSDictionary in
+                    var meta: String = ""
+
+                    do {
+                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                        meta = String(data: encoded, encoding: .utf8)!
+                    }
+                    catch {
+
+                    }
+
                     return [
                         "uuid": "\(sample.uuid)",
                         "workoutActivityType": workoutActivityTypeMap.first(where: {$0.value == sample.workoutActivityType})?.key,
@@ -544,7 +574,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "meta":sample.metadata
+                        "meta": meta,
 
                     ]
                 }
@@ -564,6 +594,16 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         rightEarSensitivities.append(samplePoint.rightEarSensitivity!.doubleValue(for: HKUnit.decibelHearingLevel()))
                     }
 
+                    var meta: String = ""
+
+                    do {
+                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                        meta = String(data: encoded, encoding: .utf8)!
+                    }
+                    catch {
+
+                    }
+
                     return [
                         "uuid": "\(sample.uuid)",
                         "frequencies": frequencies,
@@ -576,7 +616,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                         "dev_manufacturer": sample.device?.manufacturer ?? "",
                         "dev_model": sample.device?.model ?? "",
                         "dev_name": sample.device?.name ?? "",
-                        "meta":sample.metadata
+                        "meta":meta
 
                     ]
                 }
@@ -623,6 +663,16 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
         HKHealthStore().execute(voltageQuery)
         semaphore.wait()
 
+        var meta: String = ""
+
+        do {
+            let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+            meta = String(data: encoded, encoding: .utf8)!
+        }
+        catch {
+
+        }
+
         return [
             "uuid": "\(sample.uuid)",
             "voltageValues": voltageValues,
@@ -636,7 +686,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             "dev_manufacturer": sample.device?.manufacturer ?? "",
             "dev_model": sample.device?.model ?? "",
             "dev_name": sample.device?.name ?? "",
-            "meta":sample.metadata
+            "meta":meta
 
 
         ]
