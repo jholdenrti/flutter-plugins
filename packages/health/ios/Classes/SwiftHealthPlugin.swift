@@ -438,6 +438,184 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
 
         HKHealthStore().execute(deleteQuery)
     }
+    
+    func handleSamples(dataTypeKey: String, samplesOrNil: [HKSample]?, unit: HKUnit?,  result: @escaping FlutterResult) {
+      
+        switch samplesOrNil {
+        case let (samples as [HKQuantitySample]) as Any:
+            let dictionaries = samples.map { sample -> NSDictionary in
+
+                var meta: String = ""
+
+                do {
+                    let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                    meta = String(data: encoded, encoding: .utf8)!
+                }
+                catch {
+
+                }
+
+                return [
+                    "uuid": "\(sample.uuid)",
+                    "value": sample.quantity.doubleValue(for: unit!),
+                    "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
+                    "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
+                    "source_id": sample.sourceRevision.source.bundleIdentifier,
+                    "source_name": sample.sourceRevision.source.name,
+                    "dev_manufacturer": sample.device?.manufacturer ?? "",
+                    "dev_model": sample.device?.model ?? "",
+                    "dev_name": sample.device?.name ?? "",
+                    "meta":meta
+                ]
+            }
+            DispatchQueue.main.async {
+                result(dictionaries)
+            }
+
+        case var (samplesCategory as [HKCategorySample]) as Any:
+            if (dataTypeKey == self.SLEEP_IN_BED) {
+                samplesCategory = samplesCategory.filter { $0.value == 0 }
+            }
+            if (dataTypeKey == self.SLEEP_ASLEEP) {
+                samplesCategory = samplesCategory.filter { $0.value == 1 }
+            }
+            if (dataTypeKey == self.SLEEP_AWAKE) {
+                samplesCategory = samplesCategory.filter { $0.value == 2 }
+            }
+            if (dataTypeKey == self.HEADACHE_UNSPECIFIED) {
+                samplesCategory = samplesCategory.filter { $0.value == 0 }
+            }
+            if (dataTypeKey == self.HEADACHE_NOT_PRESENT) {
+                samplesCategory = samplesCategory.filter { $0.value == 1 }
+            }
+            if (dataTypeKey == self.HEADACHE_MILD) {
+                samplesCategory = samplesCategory.filter { $0.value == 2 }
+            }
+            if (dataTypeKey == self.HEADACHE_MODERATE) {
+                samplesCategory = samplesCategory.filter { $0.value == 3 }
+            }
+            if (dataTypeKey == self.HEADACHE_SEVERE) {
+                samplesCategory = samplesCategory.filter { $0.value == 4 }
+            }
+            let categories = samplesCategory.map { sample -> NSDictionary in
+                var meta: String = ""
+
+                do {
+                    let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                    meta = String(data: encoded, encoding: .utf8)!
+                }
+                catch {
+
+                }
+                return [
+                    "uuid": "\(sample.uuid)",
+                    "value": sample.value,
+                    "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
+                    "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
+                    "source_id": sample.sourceRevision.source.bundleIdentifier,
+                    "source_name": sample.sourceRevision.source.name,
+                    "dev_manufacturer": sample.device?.manufacturer ?? "",
+                    "dev_model": sample.device?.model ?? "",
+                    "dev_name": sample.device?.name ?? "",
+                    "meta":meta
+
+                ]
+            }
+            DispatchQueue.main.async {
+                result(categories)
+            }
+
+        case let (samplesWorkout as [HKWorkout]) as Any:
+
+            let dictionaries = samplesWorkout.map { sample -> NSDictionary in
+                var meta: String = ""
+
+                do {
+                    let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                    meta = String(data: encoded, encoding: .utf8)!
+                }
+                catch {
+
+                }
+
+                return [
+                    "uuid": "\(sample.uuid)",
+                    "workoutActivityType": workoutActivityTypeMap.first(where: {$0.value == sample.workoutActivityType})?.key,
+                    "totalEnergyBurned": sample.totalEnergyBurned?.doubleValue(for: HKUnit.kilocalorie()),
+                    "totalEnergyBurnedUnit": "KILOCALORIE",
+                    "totalDistance": sample.totalDistance?.doubleValue(for: HKUnit.meter()),
+                    "totalDistanceUnit": "METER",
+                    "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
+                    "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
+                    "source_id": sample.sourceRevision.source.bundleIdentifier,
+                    "source_name": sample.sourceRevision.source.name,
+                    "dev_manufacturer": sample.device?.manufacturer ?? "",
+                    "dev_model": sample.device?.model ?? "",
+                    "dev_name": sample.device?.name ?? "",
+                    "meta": meta,
+
+                ]
+            }
+
+            DispatchQueue.main.async {
+                result(dictionaries)
+            }
+
+        case let (samplesAudiogram as [HKAudiogramSample]) as Any:
+            let dictionaries = samplesAudiogram.map { sample -> NSDictionary in
+                var frequencies = [Double]()
+                var leftEarSensitivities = [Double]()
+                var rightEarSensitivities = [Double]()
+                for samplePoint in sample.sensitivityPoints {
+                    frequencies.append(samplePoint.frequency.doubleValue(for: HKUnit.hertz()))
+                    leftEarSensitivities.append(samplePoint.leftEarSensitivity!.doubleValue(for: HKUnit.decibelHearingLevel()))
+                    rightEarSensitivities.append(samplePoint.rightEarSensitivity!.doubleValue(for: HKUnit.decibelHearingLevel()))
+                }
+
+                var meta: String = ""
+
+                do {
+                    let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
+                    meta = String(data: encoded, encoding: .utf8)!
+                }
+                catch {
+
+                }
+
+                return [
+                    "uuid": "\(sample.uuid)",
+                    "frequencies": frequencies,
+                    "leftEarSensitivities": leftEarSensitivities,
+                    "rightEarSensitivities": rightEarSensitivities,
+                    "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
+                    "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
+                    "source_id": sample.sourceRevision.source.bundleIdentifier,
+                    "source_name": sample.sourceRevision.source.name,
+                    "dev_manufacturer": sample.device?.manufacturer ?? "",
+                    "dev_model": sample.device?.model ?? "",
+                    "dev_name": sample.device?.name ?? "",
+                    "meta":meta
+
+                ]
+            }
+            DispatchQueue.main.async {
+                result(dictionaries)
+            }
+
+        default:
+            if #available(iOS 14.0, *), let ecgSamples = samplesOrNil as? [HKElectrocardiogram] {
+                let dictionaries = ecgSamples.map(fetchEcgMeasurements)
+                DispatchQueue.main.async {
+                    result(dictionaries)
+                }
+            } else {
+                DispatchQueue.main.async {
+                    print("Error getting ECG - only available on iOS 14.0 and above!")
+                    result(nil)
+                }
+            }
+        }
+    }
 
     func getData(call: FlutterMethodCall, result: @escaping FlutterResult) {
         let arguments = call.arguments as? NSDictionary
@@ -446,200 +624,63 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
         let startTime = (arguments?["startTime"] as? NSNumber) ?? 0
         let endTime = (arguments?["endTime"] as? NSNumber) ?? 0
         let limit = (arguments?["limit"] as? Int) ?? HKObjectQueryNoLimit
-
+        //        let useAnchor = (arguments?["useAnchor"] as? Bool) ?? false
+        let useAnchor = (startTime == 1 && endTime == 1)
+        
+        
         // Convert dates from milliseconds to Date()
         let dateFrom = Date(timeIntervalSince1970: startTime.doubleValue / 1000)
         let dateTo = Date(timeIntervalSince1970: endTime.doubleValue / 1000)
-
+        
         let dataType = dataTypeLookUp(key: dataTypeKey)
         var unit: HKUnit?
+        
         if let dataUnitKey = dataUnitKey {
             unit = unitDict[dataUnitKey]
         }
-
-        let predicate = HKQuery.predicateForSamples(withStart: dateFrom, end: dateTo, options: .strictStartDate)
-        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
-
-        let query = HKSampleQuery(sampleType: dataType, predicate: predicate, limit: limit, sortDescriptors: [sortDescriptor]) { [self]
-            x, samplesOrNil, error in
-
-            switch samplesOrNil {
-            case let (samples as [HKQuantitySample]) as Any:
-                let dictionaries = samples.map { sample -> NSDictionary in
-
-                    var meta: String = ""
-
-                    do {
-                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
-                        meta = String(data: encoded, encoding: .utf8)!
-                    }
-                    catch {
-
-                    }
-
-                    return [
-                        "uuid": "\(sample.uuid)",
-                        "value": sample.quantity.doubleValue(for: unit!),
-                        "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
-                        "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
-                        "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name,
-                        "dev_manufacturer": sample.device?.manufacturer ?? "",
-                        "dev_model": sample.device?.model ?? "",
-                        "dev_name": sample.device?.name ?? "",
-                        "meta":meta
-                    ]
-                }
-                DispatchQueue.main.async {
-                    result(dictionaries)
-                }
-
-            case var (samplesCategory as [HKCategorySample]) as Any:
-                if (dataTypeKey == self.SLEEP_IN_BED) {
-                    samplesCategory = samplesCategory.filter { $0.value == 0 }
-                }
-                if (dataTypeKey == self.SLEEP_ASLEEP) {
-                    samplesCategory = samplesCategory.filter { $0.value == 1 }
-                }
-                if (dataTypeKey == self.SLEEP_AWAKE) {
-                    samplesCategory = samplesCategory.filter { $0.value == 2 }
-                }
-                if (dataTypeKey == self.HEADACHE_UNSPECIFIED) {
-                    samplesCategory = samplesCategory.filter { $0.value == 0 }
-                }
-                if (dataTypeKey == self.HEADACHE_NOT_PRESENT) {
-                    samplesCategory = samplesCategory.filter { $0.value == 1 }
-                }
-                if (dataTypeKey == self.HEADACHE_MILD) {
-                    samplesCategory = samplesCategory.filter { $0.value == 2 }
-                }
-                if (dataTypeKey == self.HEADACHE_MODERATE) {
-                    samplesCategory = samplesCategory.filter { $0.value == 3 }
-                }
-                if (dataTypeKey == self.HEADACHE_SEVERE) {
-                    samplesCategory = samplesCategory.filter { $0.value == 4 }
-                }
-                let categories = samplesCategory.map { sample -> NSDictionary in
-                    var meta: String = ""
-
-                    do {
-                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
-                        meta = String(data: encoded, encoding: .utf8)!
-                    }
-                    catch {
-
-                    }
-                    return [
-                        "uuid": "\(sample.uuid)",
-                        "value": sample.value,
-                        "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
-                        "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
-                        "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name,
-                        "dev_manufacturer": sample.device?.manufacturer ?? "",
-                        "dev_model": sample.device?.model ?? "",
-                        "dev_name": sample.device?.name ?? "",
-                        "meta":meta
-
-                    ]
-                }
-                DispatchQueue.main.async {
-                    result(categories)
-                }
-
-            case let (samplesWorkout as [HKWorkout]) as Any:
-
-                let dictionaries = samplesWorkout.map { sample -> NSDictionary in
-                    var meta: String = ""
-
-                    do {
-                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
-                        meta = String(data: encoded, encoding: .utf8)!
-                    }
-                    catch {
-
-                    }
-
-                    return [
-                        "uuid": "\(sample.uuid)",
-                        "workoutActivityType": workoutActivityTypeMap.first(where: {$0.value == sample.workoutActivityType})?.key,
-                        "totalEnergyBurned": sample.totalEnergyBurned?.doubleValue(for: HKUnit.kilocalorie()),
-                        "totalEnergyBurnedUnit": "KILOCALORIE",
-                        "totalDistance": sample.totalDistance?.doubleValue(for: HKUnit.meter()),
-                        "totalDistanceUnit": "METER",
-                        "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
-                        "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
-                        "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name,
-                        "dev_manufacturer": sample.device?.manufacturer ?? "",
-                        "dev_model": sample.device?.model ?? "",
-                        "dev_name": sample.device?.name ?? "",
-                        "meta": meta,
-
-                    ]
-                }
-
-                DispatchQueue.main.async {
-                    result(dictionaries)
-                }
-
-            case let (samplesAudiogram as [HKAudiogramSample]) as Any:
-                let dictionaries = samplesAudiogram.map { sample -> NSDictionary in
-                    var frequencies = [Double]()
-                    var leftEarSensitivities = [Double]()
-                    var rightEarSensitivities = [Double]()
-                    for samplePoint in sample.sensitivityPoints {
-                        frequencies.append(samplePoint.frequency.doubleValue(for: HKUnit.hertz()))
-                        leftEarSensitivities.append(samplePoint.leftEarSensitivity!.doubleValue(for: HKUnit.decibelHearingLevel()))
-                        rightEarSensitivities.append(samplePoint.rightEarSensitivity!.doubleValue(for: HKUnit.decibelHearingLevel()))
-                    }
-
-                    var meta: String = ""
-
-                    do {
-                        let encoded = try JSONEncoder().encode(sample.metadata?.mapValues {String(describing: $0) })
-                        meta = String(data: encoded, encoding: .utf8)!
-                    }
-                    catch {
-
-                    }
-
-                    return [
-                        "uuid": "\(sample.uuid)",
-                        "frequencies": frequencies,
-                        "leftEarSensitivities": leftEarSensitivities,
-                        "rightEarSensitivities": rightEarSensitivities,
-                        "date_from": Int(sample.startDate.timeIntervalSince1970 * 1000),
-                        "date_to": Int(sample.endDate.timeIntervalSince1970 * 1000),
-                        "source_id": sample.sourceRevision.source.bundleIdentifier,
-                        "source_name": sample.sourceRevision.source.name,
-                        "dev_manufacturer": sample.device?.manufacturer ?? "",
-                        "dev_model": sample.device?.model ?? "",
-                        "dev_name": sample.device?.name ?? "",
-                        "meta":meta
-
-                    ]
-                }
-                DispatchQueue.main.async {
-                    result(dictionaries)
-                }
-
-            default:
-                if #available(iOS 14.0, *), let ecgSamples = samplesOrNil as? [HKElectrocardiogram] {
-                    let dictionaries = ecgSamples.map(fetchEcgMeasurements)
-                    DispatchQueue.main.async {
-                        result(dictionaries)
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        print("Error getting ECG - only available on iOS 14.0 and above!")
-                        result(nil)
-                    }
+        
+        if (useAnchor) {
+            var anchor = HKQueryAnchor.init(fromValue: 0)
+            
+            let key = "Anchor-" + dataTypeKey
+            
+            do {
+                if UserDefaults.standard.object(forKey: key) != nil {
+                    let data = UserDefaults.standard.object(forKey: key) as! Data
+                    anchor = try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)!
                 }
             }
+            catch {
+                
+            }
+            
+            let query = HKAnchoredObjectQuery(type: dataType,
+                                              predicate: nil,
+                                              anchor: anchor,
+                                              limit: limit) { (query, samplesOrNil, _, newAnchor, errorOrNil) in
+                self.handleSamples(dataTypeKey: dataTypeKey, samplesOrNil: samplesOrNil, unit: unit, result: result)
+                
+                anchor = newAnchor!
+                let data: Data = try! NSKeyedArchiver.archivedData(withRootObject: newAnchor as Any, requiringSecureCoding: false)
+                UserDefaults.standard.set(data, forKey: key)
+                
+            }
+            
+            HKHealthStore().execute(query)
+            return
         }
-
+        
+        let predicate = HKQuery.predicateForSamples(withStart: dateFrom, end: dateTo, options: .strictStartDate)
+        
+        let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+        
+        let query = HKSampleQuery(sampleType: dataType, predicate: predicate, limit: limit, sortDescriptors: [sortDescriptor]) { [self]
+            x, samplesOrNil, error in
+            self.handleSamples(dataTypeKey: dataTypeKey, samplesOrNil: samplesOrNil, unit: unit, result: result)
+        }
+        
         HKHealthStore().execute(query)
+        
     }
 
     @available(iOS 14.0, *)
