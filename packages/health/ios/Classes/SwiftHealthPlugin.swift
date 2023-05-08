@@ -625,7 +625,14 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
         let endTime = (arguments?["endTime"] as? NSNumber) ?? 0
         let limit = (arguments?["limit"] as? Int) ?? HKObjectQueryNoLimit
         //        let useAnchor = (arguments?["useAnchor"] as? Bool) ?? false
-        let useAnchor = (startTime == 1 && endTime == 1)
+        let useAnchor = (startTime == 1)
+        let resetAnchor = (endTime == 1)
+        
+        let key = "Anchor-" + dataTypeKey
+        
+        if resetAnchor {
+            UserDefaults.standard.removeObject(forKey: key)
+        }
         
         
         // Convert dates from milliseconds to Date()
@@ -639,31 +646,36 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             unit = unitDict[dataUnitKey]
         }
         
-        if (useAnchor) {
+        if useAnchor {
             var anchor = HKQueryAnchor.init(fromValue: 0)
+        
+            let now = Date()
             
-            let key = "Anchor-" + dataTypeKey
+            let sixtyDaysAgo = Calendar.current.date(byAdding: .day, value: -60, to: now)
+            
+            var predicate : NSPredicate? = HKQuery.predicateForSamples(withStart: sixtyDaysAgo, end: now, options: .strictStartDate)
             
             do {
                 if UserDefaults.standard.object(forKey: key) != nil {
                     let data = UserDefaults.standard.object(forKey: key) as! Data
                     anchor = try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)!
+                    predicate = nil
                 }
             }
             catch {
-                
+              
             }
             
             let query = HKAnchoredObjectQuery(type: dataType,
-                                              predicate: nil,
+                                              predicate: predicate,
                                               anchor: anchor,
                                               limit: limit) { (query, samplesOrNil, _, newAnchor, errorOrNil) in
                 self.handleSamples(dataTypeKey: dataTypeKey, samplesOrNil: samplesOrNil, unit: unit, result: result)
                 
+                //this could theoretically backfire if the returned data is not persisted upstream in flutter
                 anchor = newAnchor!
                 let data: Data = try! NSKeyedArchiver.archivedData(withRootObject: newAnchor as Any, requiringSecureCoding: false)
                 UserDefaults.standard.set(data, forKey: key)
-                
             }
             
             HKHealthStore().execute(query)
