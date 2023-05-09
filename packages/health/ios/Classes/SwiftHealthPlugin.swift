@@ -659,7 +659,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
                 if UserDefaults.standard.object(forKey: key) != nil {
                     let data = UserDefaults.standard.object(forKey: key) as! Data
                     anchor = try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)!
-                    predicate = nil
+                    //predicate = nil
                 }
             }
             catch {
