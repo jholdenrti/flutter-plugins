@@ -48,6 +48,9 @@ enum HealthDataType {
   IRREGULAR_HEART_RATE_EVENT,
   ELECTRODERMAL_ACTIVITY,
   ELECTROCARDIOGRAM,
+
+  //WRIST TEMPERATURE (specific to Apple Watch)
+  WRIST_TEMPERATURE,
 }
 
 enum HealthDataAccess {
@@ -100,6 +103,7 @@ const List<HealthDataType> _dataTypeKeysIOS = [
   HealthDataType.HEADACHE_SEVERE,
   HealthDataType.HEADACHE_UNSPECIFIED,
   HealthDataType.ELECTROCARDIOGRAM,
+  HealthDataType.WRIST_TEMPERATURE,
 ];
 
 /// List of data types available on Android
@@ -175,6 +179,7 @@ const Map<HealthDataType, HealthDataUnit> _dataTypeToUnit = {
   HealthDataType.IRREGULAR_HEART_RATE_EVENT: HealthDataUnit.NO_UNIT,
   HealthDataType.HEART_RATE_VARIABILITY_SDNN: HealthDataUnit.MILLISECOND,
   HealthDataType.ELECTROCARDIOGRAM: HealthDataUnit.VOLT,
+  HealthDataType.WRIST_TEMPERATURE: HealthDataUnit.DEGREE_CELSIUS,
 };
 
 const PlatformTypeJsonValue = {

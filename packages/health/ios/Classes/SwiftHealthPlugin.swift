@@ -8,6 +8,7 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
     var healthDataTypes = [HKSampleType]()
     var heartRateEventTypes = Set<HKSampleType>()
     var headacheType = Set<HKSampleType>()
+    var wristTempType = Set<HKSampleType>()
     var allDataTypes = Set<HKSampleType>()
     var dataTypesDict: [String: HKSampleType] = [:]
     var unitDict: [String: HKUnit] = [:]
@@ -56,6 +57,8 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
     let HEADACHE_MODERATE = "HEADACHE_MODERATE"
     let HEADACHE_SEVERE = "HEADACHE_SEVERE"
     let ELECTROCARDIOGRAM = "ELECTROCARDIOGRAM"
+    let WRIST_TEMPERATURE = "WRIST_TEMPERATURE"
+
 
     // Health Unit types
     // MOLE_UNIT_WITH_MOLAR_MASS, // requires molar mass input - not supported yet
@@ -1008,10 +1011,19 @@ public class SwiftHealthPlugin: NSObject, FlutterPlugin {
             workoutActivityTypeMap["PICKLEBALL"] = HKWorkoutActivityType.pickleball
             workoutActivityTypeMap["COOLDOWN"] = HKWorkoutActivityType.cooldown
         }
+        
+        if #available(iOS 16.0, *) {
+            dataTypesDict[WRIST_TEMPERATURE] = HKSampleType.quantityType(forIdentifier: .appleSleepingWristTemperature)!
+            
+            wristTempType = Set([
+                HKSampleType.quantityType(forIdentifier: .appleSleepingWristTemperature)!,
+            ])
+        }
 
         // Concatenate heart events, headache and health data types (both may be empty)
         allDataTypes = Set(heartRateEventTypes + healthDataTypes)
         allDataTypes = allDataTypes.union(headacheType)
+        allDataTypes = allDataTypes.union(wristTempType)
     }
 }
 
